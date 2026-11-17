@@ -4,7 +4,7 @@
 
 [![Android](https://img.shields.io/badge/Platform-Android%20%7C%20Web-emerald.svg)](https://developer.android.com/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Release](https://img.shields.io/badge/Version-v1.0.0-indigo.svg)](dist/CanYouAffordIt-v1.0.apk)
+[![Release](https://img.shields.io/badge/Version-v1.0.0-indigo.svg)](https://github.com/Claeeex/Can-I-afford-it-/releases/tag/v1.0.0)
 
 ---
 
@@ -84,10 +84,12 @@ The signature core tool answering: *"Can I afford this right now?"*
 
 The Android APK is compiled, signed, and ready for installation:
 
-| Build Type | File Path | Size | Description |
+| Build Type | Download | Size | Description |
 |:---|:---|:---|:---|
-| **Production Release** | [`dist/CanYouAffordIt-v1.0.apk`](dist/CanYouAffordIt-v1.0.apk) | **~856 KB** | Highly optimized, ProGuard/R8 shrunk, signed with universal cert |
-| **Debug Build** | [`dist/CanYouAffordIt-v1.0-debug.apk`](dist/CanYouAffordIt-v1.0-debug.apk) | **~11.7 MB** | Unminified build with full debugging symbols |
+| **Production Release** | [CanYouAffordIt-v1.0.apk](https://github.com/Claeeex/Can-I-afford-it-/releases/download/v1.0.0/CanYouAffordIt-v1.0.apk) | **~856 KB** | Highly optimized, ProGuard/R8 shrunk, signed with universal cert |
+| **Debug Build** | [CanYouAffordIt-v1.0-debug.apk](https://github.com/Claeeex/Can-I-afford-it-/releases/download/v1.0.0/CanYouAffordIt-v1.0-debug.apk) | **~11.7 MB** | Unminified build with full debugging symbols |
+
+Both builds are hosted on the [v1.0.0 GitHub Release](https://github.com/Claeeex/Can-I-afford-it-/releases/tag/v1.0.0).
 
 ### How to Install the APK on Android
 1. Transfer or download `CanYouAffordIt-v1.0.apk` to your Android phone or tablet.
@@ -131,9 +133,7 @@ Canyouaffordit/
 │   │   │   └── manifest.json          # PWA metadata
 │   │   └── AndroidManifest.xml        # Permissions & activity configuration
 │   └── build.gradle.kts               # Android & dependencies config
-├── dist/                              # Ready-to-publish APK builds
-│   ├── CanYouAffordIt-v1.0.apk        # Signed release APK (~856 KB)
-│   └── CanYouAffordIt-v1.0-debug.apk  # Debug APK
+├── dist/                              # Local builds (gitignored; APKs published in GitHub Releases)
 ├── screenshots/
 │   └── app_preview.png                # Device screenshot
 ├── index.html                         # Standalone web application
