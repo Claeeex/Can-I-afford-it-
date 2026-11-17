@@ -1,0 +1,2444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Can You Afford It? | Personal Savings & Affordability Decision App</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              300: '#6ee7b7',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            },
+            accent: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    @keyframes pulse-emerald {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+    }
+    .celebrate-glow {
+      animation: pulse-emerald 2s infinite;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col selection:bg-brand-500 selection:text-white pb-20 sm:pb-8">
+
+  <!-- ================= TOP NAVIGATION / HEADER ================= -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-all">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-20">
+        <!-- Logo & Branding -->
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('goals')">
+          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-brand-600 via-brand-500 to-emerald-400 flex items-center justify-center text-white shadow-md shadow-brand-500/20 ring-2 ring-brand-500/20">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z"/>
+              <path d="M16 9h.01"/>
+              <path d="M2 9v1"/>
+              <path d="M2 13h1"/>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900">Can You Afford It?</h1>
+              <span id="user-badge-header" class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-200">Personal</span>
+            </div>
+            <p class="text-xs text-slate-500 hidden sm:block">Smart savings tracker & purchase decision engine</p>
+          </div>
+        </div>
+
+        <!-- Desktop Navigation Tabs -->
+        <nav class="hidden md:flex items-center space-x-1 bg-slate-100/80 p-1 rounded-2xl border border-slate-200/60 text-xs font-bold">
+          <button onclick="switchTab('goals')" id="desktop-tab-goals" class="nav-tab px-4 py-2 rounded-xl transition bg-white text-brand-700 shadow-sm flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>My Goals</span>
+          </button>
+          <button onclick="switchTab('afford')" id="desktop-tab-afford" class="nav-tab px-4 py-2 rounded-xl transition text-slate-600 hover:text-slate-900 flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+            <span>Can I Afford It?</span>
+          </button>
+          <button onclick="switchTab('analytics')" id="desktop-tab-analytics" class="nav-tab px-4 py-2 rounded-xl transition text-slate-600 hover:text-slate-900 flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            <span>Analytics</span>
+          </button>
+          <button onclick="switchTab('settings')" id="desktop-tab-settings" class="nav-tab px-4 py-2 rounded-xl transition text-slate-600 hover:text-slate-900 flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <span>Settings</span>
+          </button>
+        </nav>
+
+        <!-- Right Header Actions -->
+        <div class="flex items-center space-x-2 sm:space-x-3">
+          <button onclick="switchTab('settings')" title="Manage Currency & Settings" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+            <span id="current-currency-display">£ (GBP)</span>
+          </button>
+
+          <button onclick="openCreateModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 rounded-xl shadow-sm shadow-brand-600/30 active:scale-[0.98] transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+            </svg>
+            <span>New Goal</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTAINER ================= -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-7">
+
+    <!-- ================= TAB 1: GOALS DASHBOARD ================= -->
+    <div id="tab-content-goals" class="tab-pane space-y-6">
+
+      <section id="user-pace-banner" class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-5 sm:p-6 shadow-lg border border-slate-700/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="text-xs uppercase tracking-wider font-bold text-brand-400">Monthly Savings Target</span>
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-brand-400"></span>
+            <span id="user-greeting-name" class="text-xs text-slate-300 font-medium">Welcome!</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+            <span id="banner-monthly-saved">£0.00</span>
+            <span class="text-sm font-semibold text-slate-400">saved of <span id="banner-monthly-target">£250.00</span> target</span>
+          </h2>
+          <p id="banner-pace-message" class="text-xs text-slate-300">Set your monthly budget in Settings to track your monthly pace.</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button onclick="switchTab('afford')" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/10 transition flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-brand-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+            <span>Can I Afford Something?</span>
+          </button>
+          <button onclick="openCreateModal()" class="px-4 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold shadow-md shadow-brand-500/20 transition flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>Add Goal</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5">
+        <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-semibold mb-1">
+            <span>Total Saved</span>
+            <div class="w-8 h-8 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+          </div>
+          <div>
+            <div id="stat-total-saved" class="text-xl sm:text-2xl font-extrabold text-brand-600 tracking-tight">£0.00</div>
+            <p id="stat-saved-subtitle" class="text-[11px] text-slate-400 mt-0.5">0 total deposits</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-semibold mb-1">
+            <span>Total Target</span>
+            <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+          </div>
+          <div>
+            <div id="stat-total-target" class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">£0.00</div>
+            <p id="stat-target-subtitle" class="text-[11px] text-slate-400 mt-0.5">Across 0 goals</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-semibold mb-1">
+            <span>Remaining Needed</span>
+            <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/></svg>
+            </div>
+          </div>
+          <div>
+            <div id="stat-total-remaining" class="text-xl sm:text-2xl font-extrabold text-amber-600 tracking-tight">£0.00</div>
+            <p class="text-[11px] text-slate-400 mt-0.5">To afford all items</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-semibold mb-1">
+            <span>Overall Progress</span>
+            <div class="w-8 h-8 rounded-xl bg-accent-50 text-accent-600 flex items-center justify-center">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+            </div>
+          </div>
+          <div>
+            <div id="stat-overall-percent" class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">0%</div>
+            <div class="w-full bg-slate-100 rounded-full h-2 mt-1.5 overflow-hidden">
+              <div id="master-progress-bar" class="h-full bg-gradient-to-r from-brand-500 to-accent-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-sm space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3.5">
+          <div class="flex items-center p-1 bg-slate-100 rounded-xl max-w-full overflow-x-auto text-xs font-bold">
+            <button onclick="setFilter('all')" id="filter-tab-all" class="filter-tab px-3.5 py-1.5 rounded-lg transition whitespace-nowrap bg-white text-slate-900 shadow-sm">
+              All Goals (<span id="count-all">0</span>)
+            </button>
+            <button onclick="setFilter('in-progress')" id="filter-tab-in-progress" class="filter-tab px-3.5 py-1.5 rounded-lg transition whitespace-nowrap text-slate-600 hover:text-slate-900">
+              In Progress (<span id="count-in-progress">0</span>)
+            </button>
+            <button onclick="setFilter('completed')" id="filter-tab-completed" class="filter-tab px-3.5 py-1.5 rounded-lg transition whitespace-nowrap text-slate-600 hover:text-slate-900">
+              Completed (<span id="count-completed">0</span>)
+            </button>
+          </div>
+
+          <div class="flex flex-wrap sm:flex-nowrap items-center gap-2.5">
+            <div class="relative flex-1 sm:w-56">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              </div>
+              <input type="text" id="search-input" aria-label="Search goals" oninput="handleSearch(this.value)" placeholder="Search goals..." class="w-full pl-9 pr-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition">
+            </div>
+
+            <div class="relative">
+              <select id="sort-select" aria-label="Sort goals by" onchange="handleSortChange(this.value)" class="appearance-none bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 sm:py-2 pr-8 text-xs font-semibold text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 transition cursor-pointer">
+                <option value="closest">Closest to Goal (%)</option>
+                <option value="furthest">Furthest from Goal (%)</option>
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="price-high">Target: High to Low</option>
+                <option value="price-low">Target: Low to High</option>
+                <option value="name">Item Name (A-Z)</option>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </div>
+            </div>
+
+            <div class="flex items-center border border-slate-300 rounded-xl overflow-hidden bg-slate-50 p-0.5">
+              <button id="view-grid-btn" onclick="setViewMode('grid')" title="Card Grid View" class="p-1.5 rounded-lg bg-white text-brand-600 shadow-sm transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+              </button>
+              <button id="view-list-btn" onclick="setViewMode('list')" title="Compact List View" class="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div id="empty-state" class="hidden text-center py-16 px-4 bg-white rounded-3xl border-2 border-dashed border-slate-300 space-y-4">
+          <div class="w-16 h-16 bg-brand-50 text-brand-600 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div class="max-w-md mx-auto space-y-1">
+            <h3 id="empty-title" class="text-base sm:text-lg font-bold text-slate-800">Your savings list is ready</h3>
+            <p id="empty-description" class="text-xs sm:text-sm text-slate-500">Set your first real goal or load demo goals to explore how the tracker works.</p>
+          </div>
+          <div class="pt-2 flex flex-wrap justify-center gap-2">
+            <button onclick="openCreateModal()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-brand-600/30 transition">
+              + Create First Goal
+            </button>
+            <button onclick="loadSampleData()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold rounded-xl transition">
+              Load Demo Goals
+            </button>
+          </div>
+        </div>
+
+        <div id="items-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+      </section>
+    </div>
+
+    <!-- ================= TAB 2: "CAN I AFFORD IT?" CALCULATOR ================= -->
+    <div id="tab-content-afford" class="tab-pane hidden space-y-6">
+      <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-700/60 relative overflow-hidden">
+        <div class="max-w-2xl space-y-2 relative z-10">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-brand-500/20 text-brand-300 border border-brand-500/30">
+            <span>⚖️ Affordability Decision Engine</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Can You Afford It Right Now?</h2>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Test whether buying an item right now is financially safe, how many hours of work it costs, and how it impacts your savings goals and safety buffer.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-5 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
+          <h3 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">Evaluate an Item</h3>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Select from Your Goals</label>
+            <select id="calc-goal-select" onchange="handleCalcGoalSelect(this.value)" class="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+              <option value="">-- Or enter a custom item below --</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Item Name</label>
+            <input type="text" id="calc-item-name" placeholder="e.g. Dyson Airwrap, New iPad, Flight Tickets" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Item Price / Cost <span class="text-red-500">*</span></label>
+            <div class="relative rounded-xl shadow-sm">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 font-bold text-sm">
+                <span class="currency-symbol-label">£</span>
+              </div>
+              <input type="number" step="any" min="0.01" id="calc-item-price" oninput="runAffordabilityAnalysis()" placeholder="150.00" class="w-full pl-9 pr-3.5 py-2.5 text-lg font-bold bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <button onclick="runAffordabilityAnalysis()" class="w-full py-3 px-4 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 active:scale-95 transition shadow">
+              Run Affordability Check
+            </button>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7 bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between space-y-6">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 class="text-base font-bold text-slate-900">Affordability Verdict</h3>
+              <span id="calc-verdict-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700">Enter a price</span>
+            </div>
+
+            <div id="calc-verdict-banner" class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5 transition-all">
+              <h4 id="calc-verdict-title" class="text-lg font-extrabold text-slate-900">Enter an item price to see if you can afford it</h4>
+              <p id="calc-verdict-desc" class="text-xs sm:text-sm text-slate-500">We'll cross-reference your total savings, monthly budget, and hourly wage.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <div class="text-[11px] font-semibold text-slate-400">Hours of Life / Work</div>
+                <div id="calc-metric-hours" class="text-lg font-extrabold text-slate-900 mt-1">--</div>
+                <div class="text-[10px] text-slate-400">At your wage rate</div>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <div class="text-[11px] font-semibold text-slate-400">Saving Time Needed</div>
+                <div id="calc-metric-time" class="text-lg font-extrabold text-slate-900 mt-1">--</div>
+                <div class="text-[10px] text-slate-400">Based on monthly rate</div>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <div class="text-[11px] font-semibold text-slate-400">Impulse Cool-off</div>
+                <div id="calc-metric-cooloff" class="text-lg font-extrabold text-brand-600 mt-1">Wait 48h</div>
+                <div class="text-[10px] text-slate-400">Prevent buyer's remorse</div>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 space-y-2 text-xs text-slate-700">
+              <div class="font-bold text-indigo-900 flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Financial Impact Summary</span>
+              </div>
+              <p id="calc-impact-text" class="leading-relaxed">
+                Enter an amount to see how this purchase affects your total current savings and emergency buffer.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-slate-100">
+            <button id="calc-add-goal-btn" onclick="addCalculatedItemToGoals()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 transition">
+              + Save as New Goal
+            </button>
+            <button onclick="switchTab('goals')" class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">
+              Back to Goals
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= TAB 3: ANALYTICS & INSIGHTS ================= -->
+    <div id="tab-content-analytics" class="tab-pane hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">Savings Analytics & Ledger</h2>
+          <p class="text-xs text-slate-500">Track your savings velocity, milestones, and transaction ledger</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="exportDataJSON()" class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-xl shadow-sm transition inline-flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            <span>Export CSV / JSON</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm">
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Savings Velocity</div>
+          <div id="analytics-velocity-val" class="text-2xl font-extrabold text-brand-600 mt-1">£0.00 / wk</div>
+          <p class="text-[11px] text-slate-400 mt-1">Average deposits rate</p>
+        </div>
+        <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm">
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Completed Milestones</div>
+          <div id="analytics-completed-val" class="text-2xl font-extrabold text-slate-900 mt-1">0 Goals</div>
+          <p id="analytics-completed-subtitle" class="text-[11px] text-slate-400 mt-1">0% completion rate</p>
+        </div>
+        <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm">
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Estimated Finish Date</div>
+          <div id="analytics-finish-date" class="text-2xl font-extrabold text-indigo-600 mt-1">--</div>
+          <p class="text-[11px] text-slate-400 mt-1">To afford all active goals</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <h3 class="text-base font-bold text-slate-900">Savings Allocation by Category</h3>
+        <div id="analytics-category-bars" class="space-y-3"></div>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h3 class="text-base font-bold text-slate-900">All Recent Transactions</h3>
+          <span id="ledger-count" class="text-xs font-semibold text-slate-400">0 records</span>
+        </div>
+        <div id="analytics-ledger-list" class="max-h-80 overflow-y-auto space-y-2 pr-1"></div>
+      </div>
+    </div>
+
+    <!-- ================= TAB 4: SETTINGS & PROFILE ================= -->
+    <div id="tab-content-settings" class="tab-pane hidden space-y-6">
+      <div class="border-b border-slate-200 pb-4">
+        <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">Settings & Financial Profile</h2>
+        <p class="text-xs text-slate-500">Configure your savings baseline, wage rate, currency, and data management</p>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-5">
+        <h3 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">Financial Profile</h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Your Name / Nickname</label>
+            <input type="text" id="settings-user-name" placeholder="e.g. Josh" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Currency</label>
+            <select id="settings-currency-select" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+              <option value="£|GBP">£ GBP (British Pound)</option>
+              <option value="$|USD">$ USD (US Dollar)</option>
+              <option value="€|EUR">€ EUR (Euro)</option>
+              <option value="¥|JPY">¥ JPY (Japanese Yen)</option>
+              <option value="C$|CAD">C$ CAD (Canadian Dollar)</option>
+              <option value="A$|AUD">A$ AUD (Australian Dollar)</option>
+              <option value="CHF|CHF">CHF (Swiss Franc)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Monthly Savings Budget / Target</label>
+            <div class="relative rounded-xl shadow-sm">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 font-bold text-sm">
+                <span class="currency-symbol-label">£</span>
+              </div>
+              <input type="number" step="any" min="0" id="settings-monthly-budget" placeholder="250.00" class="w-full pl-9 pr-3.5 py-2.5 text-sm font-semibold bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Used to evaluate how fast you can afford wishlist items.</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Hourly Take-Home Wage (Optional)</label>
+            <div class="relative rounded-xl shadow-sm">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 font-bold text-sm">
+                <span class="currency-symbol-label">£</span>
+              </div>
+              <input type="number" step="any" min="0" id="settings-hourly-wage" placeholder="18.00" class="w-full pl-9 pr-3.5 py-2.5 text-sm font-semibold bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Powers the "How many hours of work is this?" calculation.</p>
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <button onclick="saveUserSettings()" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 shadow-md shadow-brand-600/30 transition">
+            Save Profile Settings
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <h3 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">Setup Wizard</h3>
+        <p class="text-xs text-slate-500">Need to reconfigure your setup or walk through the getting-started guide again?</p>
+        <button onclick="launchSetupWizard()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 transition">
+          Launch Setup Wizard
+        </button>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <h3 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">Data Management & Backup</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+            <div>
+              <h4 class="text-xs font-bold text-slate-900">Export JSON Backup</h4>
+              <p class="text-[11px] text-slate-500">Download all goals & transactions</p>
+            </div>
+            <button onclick="exportDataJSON()" class="px-3 py-1.5 text-xs font-bold text-brand-700 bg-brand-100 hover:bg-brand-200 rounded-xl transition">
+              Export
+            </button>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+            <div>
+              <h4 class="text-xs font-bold text-slate-900">Import JSON Backup</h4>
+              <p class="text-[11px] text-slate-500">Restore from an existing backup</p>
+            </div>
+            <label class="px-3 py-1.5 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl cursor-pointer transition">
+              Import
+              <input type="file" accept=".json" onchange="importDataJSON(event)" class="hidden">
+            </label>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100">
+          <button onclick="loadSampleData()" class="text-xs font-bold text-slate-600 hover:text-slate-900 transition underline">
+            Load Demo Goals
+          </button>
+          <button onclick="clearAllData()" class="text-xs font-bold text-red-600 hover:text-red-700 transition underline">
+            Erase Everything (Factory Reset)
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ================= MOBILE BOTTOM NAVIGATION ================= -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 py-1.5 px-4 flex items-center justify-around shadow-lg">
+    <button onclick="switchTab('goals')" id="mobile-tab-goals" class="flex flex-col items-center p-1 text-brand-600">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span class="text-[10px] font-bold mt-0.5">Goals</span>
+    </button>
+    <button onclick="switchTab('afford')" id="mobile-tab-afford" class="flex flex-col items-center p-1 text-slate-400">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+      <span class="text-[10px] font-bold mt-0.5">Can I Afford?</span>
+    </button>
+    <button onclick="switchTab('analytics')" id="mobile-tab-analytics" class="flex flex-col items-center p-1 text-slate-400">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <span class="text-[10px] font-bold mt-0.5">Analytics</span>
+    </button>
+    <button onclick="switchTab('settings')" id="mobile-tab-settings" class="flex flex-col items-center p-1 text-slate-400">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      <span class="text-[10px] font-bold mt-0.5">Settings</span>
+    </button>
+  </nav>
+
+  <!-- ================= SETUP WIZARD (ONBOARDING MODAL) ================= -->
+  <div id="setup-wizard-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen p-4 text-center">
+      <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-md transition-opacity"></div>
+      <div class="relative bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all max-w-lg w-full border border-slate-200 p-6 sm:p-8 space-y-6">
+
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div class="flex items-center space-x-2">
+            <span class="w-8 h-8 rounded-xl bg-brand-500 text-white font-bold flex items-center justify-center text-xs shadow-md shadow-brand-500/30">🎯</span>
+            <div>
+              <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Step <span id="setup-step-num">1</span> of 3</span>
+              <h3 id="setup-step-title" class="text-lg font-extrabold text-slate-900">Welcome to Can You Afford It?</h3>
+            </div>
+          </div>
+          <button onclick="closeSetupWizard(true)" class="text-xs font-semibold text-slate-400 hover:text-slate-600 transition">
+            Skip
+          </button>
+        </div>
+
+        <div id="setup-step-1" class="setup-step space-y-4">
+          <p class="text-xs text-slate-500 leading-relaxed">
+            Let's customize your financial dashboard so you can set goals, log savings, and know instantly whether you can afford any purchase.
+          </p>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">What should we call you?</label>
+            <input type="text" id="wizard-name" placeholder="e.g. Josh" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Primary Currency</label>
+            <select id="wizard-currency" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+              <option value="£|GBP">£ GBP (British Pound)</option>
+              <option value="$|USD">$ USD (US Dollar)</option>
+              <option value="€|EUR">€ EUR (Euro)</option>
+              <option value="¥|JPY">¥ JPY (Japanese Yen)</option>
+              <option value="C$|CAD">C$ CAD (Canadian Dollar)</option>
+              <option value="A$|AUD">A$ AUD (Australian Dollar)</option>
+              <option value="CHF|CHF">CHF (Swiss Franc)</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="setup-step-2" class="setup-step hidden space-y-4">
+          <p class="text-xs text-slate-500 leading-relaxed">
+            These values power the <strong>Affordability Decision Engine</strong> to calculate how many hours or weeks of work an item costs.
+          </p>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Monthly Savings Target</label>
+            <div class="relative rounded-xl shadow-sm">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 font-bold text-sm">
+                <span class="currency-symbol-label">£</span>
+              </div>
+              <input type="number" step="any" min="0" id="wizard-budget" placeholder="250.00" class="w-full pl-9 pr-3.5 py-2.5 text-sm font-semibold bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Approximately how much do you save per month toward personal items?</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Hourly Take-Home Wage (Optional)</label>
+            <div class="relative rounded-xl shadow-sm">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 font-bold text-sm">
+                <span class="currency-symbol-label">£</span>
+              </div>
+              <input type="number" step="any" min="0" id="wizard-wage" placeholder="18.00" class="w-full pl-9 pr-3.5 py-2.5 text-sm font-semibold bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Allows calculating: "This purchase costs 8 hours of your life."</p>
+          </div>
+        </div>
+
+        <div id="setup-step-3" class="setup-step hidden space-y-4">
+          <p class="text-xs text-slate-500 leading-relaxed">
+            What is one item you want to buy soon? Choose a template or create your own custom goal.
+          </p>
+
+          <div class="grid grid-cols-2 gap-2" id="starter-templates">
+            <button type="button" onclick="selectStarterTemplate('Noise-Canceling Headphones', 280, 'Tech')" class="p-3 text-left rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50 transition">
+              <span class="block text-lg">🎧</span>
+              <span class="block text-xs font-bold text-slate-900 mt-1">Headphones</span>
+              <span class="block text-[10px] text-slate-400">Target ~£280</span>
+            </button>
+            <button type="button" onclick="selectStarterTemplate('Weekend City Getaway', 450, 'Travel')" class="p-3 text-left rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50 transition">
+              <span class="block text-lg">✈️</span>
+              <span class="block text-xs font-bold text-slate-900 mt-1">Weekend Trip</span>
+              <span class="block text-[10px] text-slate-400">Target ~£450</span>
+            </button>
+            <button type="button" onclick="selectStarterTemplate('Emergency Buffer', 500, 'Other')" class="p-3 text-left rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50 transition">
+              <span class="block text-lg">🛡️</span>
+              <span class="block text-xs font-bold text-slate-900 mt-1">Emergency Fund</span>
+              <span class="block text-[10px] text-slate-400">Target ~£500</span>
+            </button>
+            <button type="button" onclick="selectStarterTemplate('New Smartphone / Tablet', 650, 'Tech')" class="p-3 text-left rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50 transition">
+              <span class="block text-lg">📱</span>
+              <span class="block text-xs font-bold text-slate-900 mt-1">Phone / Tech</span>
+              <span class="block text-[10px] text-slate-400">Target ~£650</span>
+            </button>
+          </div>
+
+          <div class="space-y-2 pt-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">Or Type a Custom Item</label>
+            <input type="text" id="wizard-goal-name" placeholder="Item name (e.g. Mechanical Keyboard)" class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+            <input type="number" step="any" min="1" id="wizard-goal-target" placeholder="Target Price (e.g. 150.00)" class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+          <button type="button" id="wizard-prev-btn" onclick="prevWizardStep()" class="hidden px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition">
+            Back
+          </button>
+          <div class="ml-auto flex items-center gap-2">
+            <button type="button" id="wizard-next-btn" onclick="nextWizardStep()" class="px-5 py-2.5 text-xs sm:text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-md shadow-brand-600/30 transition">
+              Continue
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: QUICK ADD SAVINGS ================= -->
+  <div id="quick-add-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" role="dialog" aria-modal="true">
+    <div class="flex items-end sm:items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeQuickAddModal()"></div>
+      <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+
+      <div class="inline-block align-bottom sm:align-middle bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:max-w-md w-full border border-slate-200">
+        <div class="p-6 space-y-5">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <span class="text-xs uppercase font-bold tracking-wider text-brand-600">Quick Log</span>
+              <h3 id="quick-add-item-name" class="text-lg font-bold text-slate-900 truncate max-w-xs">Item Name</h3>
+            </div>
+            <button onclick="closeQuickAddModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 space-y-2">
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-slate-500 font-medium">Current Status</span>
+              <span id="quick-add-status-text" class="font-bold text-slate-800">£0 / £0</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+              <div id="quick-add-progress-bar" class="h-full bg-brand-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <div class="flex justify-between text-[11px] text-slate-400">
+              <span id="quick-add-percent-text">0% reached</span>
+              <span id="quick-add-remaining-text">£0 remaining</span>
+            </div>
+          </div>
+
+          <div class="flex p-1 bg-slate-100 rounded-xl text-xs font-semibold">
+            <button id="type-btn-deposit" onclick="setQuickAddType('deposit')" class="flex-1 py-1.5 rounded-lg bg-white text-brand-700 shadow-sm transition flex items-center justify-center gap-1.5 font-bold">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+              <span>+ Add Deposit</span>
+            </button>
+            <button id="type-btn-withdraw" onclick="setQuickAddType('withdraw')" class="flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition flex items-center justify-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"/></svg>
+              <span>- Subtract / Mistake</span>
+            </button>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                Amount to <span id="quick-add-type-label">Add</span>
+              </label>
+              <div class="relative rounded-2xl shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 font-bold text-lg">
+                  <span id="quick-add-currency-symbol">£</span>
+                </div>
+                <input type="number" step="any" min="0.01" id="quick-add-amount" placeholder="0.00" class="block w-full pl-10 pr-4 py-3 text-xl font-bold bg-slate-50 border border-slate-300 rounded-2xl focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition" autofocus>
+              </div>
+            </div>
+
+            <div id="quick-add-chips" class="flex flex-wrap gap-1.5">
+              <button type="button" onclick="presetAmount(10)" class="px-2.5 py-1 text-xs font-semibold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-700 rounded-lg border border-slate-200 transition">+10</button>
+              <button type="button" onclick="presetAmount(25)" class="px-2.5 py-1 text-xs font-semibold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-700 rounded-lg border border-slate-200 transition">+25</button>
+              <button type="button" onclick="presetAmount(50)" class="px-2.5 py-1 text-xs font-semibold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-700 rounded-lg border border-slate-200 transition">+50</button>
+              <button type="button" onclick="presetAmount(100)" class="px-2.5 py-1 text-xs font-semibold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-700 rounded-lg border border-slate-200 transition">+100</button>
+              <button type="button" id="fill-remaining-chip" onclick="presetFillRemaining()" class="px-2.5 py-1 text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 rounded-lg transition">Fill Remaining</button>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Note (Optional)</label>
+              <input type="text" id="quick-add-note" placeholder="e.g. Paycheck, Sold old gear, Birthday money" class="block w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+            </div>
+
+            <div id="quick-add-projection" class="p-3 bg-brand-50/60 rounded-xl border border-brand-200 text-xs text-brand-900 flex items-center justify-between">
+              <span class="font-medium">New Total After Log:</span>
+              <span id="quick-add-projected-val" class="font-bold">£0.00</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+            <button type="button" onclick="closeQuickAddModal()" class="px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition">
+              Cancel
+            </button>
+            <button type="button" onclick="submitQuickAdd()" class="px-5 py-2.5 text-xs sm:text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-md shadow-brand-600/30 transition active:scale-95">
+              Confirm Log
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: CREATE / EDIT ITEM ================= -->
+  <div id="item-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" role="dialog" aria-modal="true">
+    <div class="flex items-end sm:items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeItemModal()"></div>
+      <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+
+      <div class="inline-block align-bottom sm:align-middle bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:max-w-lg w-full border border-slate-200">
+        <form onsubmit="handleItemFormSubmit(event)" class="p-6 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h3 id="item-modal-title" class="text-lg font-bold text-slate-900">Add New Goal</h3>
+            <button type="button" onclick="closeItemModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <input type="hidden" id="item-modal-id">
+
+          <div>
+            <label for="item-modal-name" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+              Item Name <span class="text-red-500">*</span>
+            </label>
+            <input type="text" id="item-modal-name" required placeholder="e.g. Noise-Canceling Headphones, New Bike, Tokyo Flight" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Category</label>
+            <div class="grid grid-cols-4 sm:grid-cols-7 gap-2" id="category-selector"></div>
+            <input type="hidden" id="item-modal-category" value="Tech">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="item-modal-target" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+                Target Price <span class="text-red-500">*</span>
+              </label>
+              <div class="relative rounded-xl shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 font-bold text-sm">
+                  <span class="currency-symbol-label">£</span>
+                </div>
+                <input type="number" step="any" min="0.01" id="item-modal-target" required placeholder="350.00" class="w-full pl-9 pr-3.5 py-2.5 text-sm font-semibold bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+              </div>
+            </div>
+
+            <div id="starting-amount-group">
+              <label for="item-modal-starting" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+                Starting Amount Saved
+              </label>
+              <div class="relative rounded-xl shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 font-bold text-sm">
+                  <span class="currency-symbol-label">£</span>
+                </div>
+                <input type="number" step="any" min="0" id="item-modal-starting" placeholder="0.00" class="w-full pl-9 pr-3.5 py-2.5 text-sm font-semibold bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="item-modal-date" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+                Target Date (Optional)
+              </label>
+              <input type="date" id="item-modal-date" class="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+            </div>
+            <div>
+              <label for="item-modal-priority" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+                Priority
+              </label>
+              <select id="item-modal-priority" class="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+                <option value="medium">Medium Priority</option>
+                <option value="high">High Priority</option>
+                <option value="low">Low Priority</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="item-modal-link" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+              Product Link or Note (Optional)
+            </label>
+            <input type="text" id="item-modal-link" placeholder="e.g. https://amazon.com/... or 'Wait for Black Friday'" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 transition">
+          </div>
+
+          <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+            <button type="button" onclick="closeItemModal()" class="px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition">
+              Cancel
+            </button>
+            <button type="submit" class="px-5 py-2.5 text-xs sm:text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-md shadow-brand-600/30 transition active:scale-95">
+              Save Goal
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: DETAIL & TRANSACTION HISTORY ================= -->
+  <div id="detail-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" role="dialog" aria-modal="true">
+    <div class="flex items-end sm:items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeDetailModal()"></div>
+      <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+
+      <div class="inline-block align-bottom sm:align-middle bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:max-w-xl w-full border border-slate-200">
+        <div class="p-6 space-y-6">
+          <div class="flex items-start justify-between border-b border-slate-100 pb-4">
+            <div class="space-y-1 pr-4">
+              <div class="flex items-center gap-2">
+                <span id="detail-category-badge" class="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">Category</span>
+                <span id="detail-priority-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">Medium</span>
+                <span id="detail-status-badge" class="px-2 py-0.5 rounded-full text-xs font-bold bg-brand-100 text-brand-800">In Progress</span>
+              </div>
+              <h3 id="detail-name" class="text-xl font-bold text-slate-900">Goal Item Name</h3>
+              <div id="detail-link-container"></div>
+            </div>
+            <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 sm:p-5 space-y-3">
+            <div class="flex items-baseline justify-between">
+              <div>
+                <span class="text-xs text-slate-400">Total Saved</span>
+                <div id="detail-saved-val" class="text-2xl font-extrabold text-brand-400">£0.00</div>
+              </div>
+              <div class="text-right">
+                <span class="text-xs text-slate-400">Target Value</span>
+                <div id="detail-target-val" class="text-lg font-bold text-slate-200">£0.00</div>
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <div class="w-full bg-slate-700 rounded-full h-3 overflow-hidden">
+                <div id="detail-progress-bar" class="h-full bg-gradient-to-r from-brand-500 to-emerald-400 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+              <div class="flex justify-between text-xs text-slate-300 font-medium">
+                <span id="detail-percent-val">0% reached</span>
+                <span id="detail-remaining-val">£0.00 needed</span>
+              </div>
+            </div>
+
+            <div id="detail-target-date-box" class="text-xs text-slate-300 pt-1 border-t border-slate-700/60 hidden">
+              Target Deadline: <span id="detail-target-date-val" class="font-bold text-white"></span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>Deposit History</span>
+            </h4>
+            <button id="detail-quick-add-btn" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-brand-700 bg-brand-50 hover:bg-brand-100 rounded-xl transition">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+              <span>+ Add Savings</span>
+            </button>
+          </div>
+
+          <div class="max-h-60 overflow-y-auto space-y-2 pr-1" id="detail-transactions-list"></div>
+
+          <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+            <button id="detail-delete-btn" class="text-xs text-red-600 hover:text-red-700 font-semibold inline-flex items-center gap-1 p-1.5 rounded-lg hover:bg-red-50 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              <span>Delete Goal</span>
+            </button>
+            <div class="flex items-center gap-2">
+              <button id="detail-edit-btn" class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+                Edit Goal
+              </button>
+              <button onclick="closeDetailModal()" class="px-4 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TOAST NOTIFICATION CONTAINER ================= -->
+  <div id="toast-container" class="fixed bottom-20 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center space-y-2 pointer-events-none"></div>
+
+  <!-- ================= JAVASCRIPT APPLICATION CODE ================= -->
+  <script>
+    /* Storage Keys */
+    const STORAGE_KEY = 'canyouaffordit_savings_data_v1';
+    const PROFILE_KEY = 'canyouaffordit_user_profile_v1';
+    const VIEW_KEY = 'canyouaffordit_view_mode_v1';
+
+    const CATEGORIES = [
+      { name: 'Tech', icon: '🎧', color: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+      { name: 'Travel', icon: '✈️', color: 'bg-sky-50 text-sky-700 border-sky-200' },
+      { name: 'Home', icon: '🛋️', color: 'bg-amber-50 text-amber-700 border-amber-200' },
+      { name: 'Fashion', icon: '👟', color: 'bg-pink-50 text-pink-700 border-pink-200' },
+      { name: 'Fitness', icon: '🚴', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+      { name: 'Gifts', icon: '🎁', color: 'bg-purple-50 text-purple-700 border-purple-200' },
+      { name: 'Other', icon: '⭐', color: 'bg-slate-100 text-slate-700 border-slate-200' }
+    ];
+
+    /* App State */
+    let items = [];
+    let userProfile = {
+      name: '',
+      monthlyBudget: 250,
+      hourlyWage: 18,
+      currency: { symbol: '£', code: 'GBP' },
+      setupCompleted: false
+    };
+
+    let activeTab = 'goals';
+    let currentFilter = 'all';
+    let currentSort = 'closest';
+    let currentSearch = '';
+    let currentViewMode = 'grid';
+
+    let activeQuickAddId = null;
+    let quickAddType = 'deposit';
+    let activeDetailId = null;
+    let wizardCurrentStep = 1;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadProfile();
+      loadItems();
+      initViewMode();
+      renderCategorySelector();
+      setupEventListeners();
+      render();
+
+      if (!userProfile.setupCompleted) {
+        launchSetupWizard();
+      }
+    });
+
+    function loadProfile() {
+      const saved = localStorage.getItem(PROFILE_KEY);
+      if (saved) {
+        try {
+          userProfile = { ...userProfile, ...JSON.parse(saved) };
+        } catch (e) {
+          console.error('Error loading profile:', e);
+        }
+      }
+      updateProfileUI();
+    }
+
+    function saveProfile() {
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(userProfile));
+      updateProfileUI();
+    }
+
+    function updateProfileUI() {
+      document.querySelectorAll('.currency-symbol-label').forEach(el => {
+        el.textContent = userProfile.currency.symbol;
+      });
+      const symDisp = document.getElementById('current-currency-display');
+      if (symDisp) symDisp.textContent = `${userProfile.currency.symbol} (${userProfile.currency.code})`;
+      const qSym = document.getElementById('quick-add-currency-symbol');
+      if (qSym) qSym.textContent = userProfile.currency.symbol;
+
+      const greetName = document.getElementById('user-greeting-name');
+      const badgeHeader = document.getElementById('user-badge-header');
+      if (userProfile.name) {
+        if (greetName) greetName.textContent = `Hey ${userProfile.name}! 👋`;
+        if (badgeHeader) badgeHeader.textContent = userProfile.name;
+      }
+
+      const sName = document.getElementById('settings-user-name');
+      if (sName) sName.value = userProfile.name || '';
+      const sBudget = document.getElementById('settings-monthly-budget');
+      if (sBudget) sBudget.value = userProfile.monthlyBudget || '';
+      const sWage = document.getElementById('settings-hourly-wage');
+      if (sWage) sWage.value = userProfile.hourlyWage || '';
+      const sCurr = document.getElementById('settings-currency-select');
+      if (sCurr) sCurr.value = `${userProfile.currency.symbol}|${userProfile.currency.code}`;
+
+      const mTarget = document.getElementById('banner-monthly-target');
+      if (mTarget) mTarget.textContent = formatMoney(userProfile.monthlyBudget || 0);
+    }
+
+    function initViewMode() {
+      const savedView = localStorage.getItem(VIEW_KEY);
+      if (savedView === 'list' || savedView === 'grid') {
+        currentViewMode = savedView;
+      }
+      updateViewToggleUI();
+    }
+
+    function formatMoney(amount) {
+      const val = Number(amount) || 0;
+      return `${userProfile.currency.symbol}${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    function setupEventListeners() {
+      const quickAmountInput = document.getElementById('quick-add-amount');
+      if (quickAmountInput) {
+        quickAmountInput.addEventListener('input', updateQuickAddProjection);
+      }
+    }
+
+    function switchTab(tabId) {
+      activeTab = tabId;
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+      const activeEl = document.getElementById(`tab-content-${tabId}`);
+      if (activeEl) activeEl.classList.remove('hidden');
+
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.classList.remove('bg-white', 'text-brand-700', 'shadow-sm');
+        btn.classList.add('text-slate-600');
+      });
+      const deskBtn = document.getElementById(`desktop-tab-${tabId}`);
+      if (deskBtn) {
+        deskBtn.classList.add('bg-white', 'text-brand-700', 'shadow-sm');
+        deskBtn.classList.remove('text-slate-600');
+      }
+
+      ['goals', 'afford', 'analytics', 'settings'].forEach(t => {
+        const mBtn = document.getElementById(`mobile-tab-${t}`);
+        if (mBtn) {
+          if (t === tabId) {
+            mBtn.className = 'flex flex-col items-center p-1 text-brand-600 font-bold';
+          } else {
+            mBtn.className = 'flex flex-col items-center p-1 text-slate-400';
+          }
+        }
+      });
+
+      if (tabId === 'afford') {
+        populateAffordGoalSelect();
+        runAffordabilityAnalysis();
+      } else if (tabId === 'analytics') {
+        renderAnalytics();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function loadItems() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          items = JSON.parse(saved);
+        } catch (e) {
+          console.error('Failed to parse saved items:', e);
+          items = [];
+        }
+      } else {
+        items = [];
+      }
+    }
+
+    function saveItems() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      render();
+    }
+
+    function loadSampleData() {
+      const now = new Date();
+      const d1 = new Date(now.getTime() - 86400000 * 12).toISOString();
+      const d2 = new Date(now.getTime() - 86400000 * 5).toISOString();
+      const d3 = new Date(now.getTime() - 86400000 * 1).toISOString();
+
+      items = [
+        {
+          id: 'goal-1',
+          name: 'Noise-Canceling Headphones',
+          targetPrice: 350,
+          currentSaved: 220,
+          category: 'Tech',
+          priority: 'high',
+          notes: 'Sony WH-1000XM5 for deep work and travel',
+          link: 'https://sony.com',
+          createdAt: d1,
+          transactions: [
+            { id: 't1', amount: 100, type: 'deposit', note: 'Initial savings allocation', date: d1 },
+            { id: 't2', amount: 70, type: 'deposit', note: 'Sold old wireless earbuds', date: d2 },
+            { id: 't3', amount: 50, type: 'deposit', note: 'Monthly tech budget rollover', date: d3 }
+          ]
+        },
+        {
+          id: 'goal-2',
+          name: 'Weekend City Trip to Edinburgh',
+          targetPrice: 480,
+          currentSaved: 160,
+          category: 'Travel',
+          priority: 'medium',
+          notes: 'Train tickets, boutique hotel & castle entry',
+          link: '',
+          createdAt: d2,
+          transactions: [
+            { id: 't4', amount: 100, type: 'deposit', note: 'Flight & train fund starter', date: d2 },
+            { id: 't5', amount: 60, type: 'deposit', note: 'Cut back on dining out this week', date: d3 }
+          ]
+        },
+        {
+          id: 'goal-3',
+          name: 'Mechanical Keyboard (Keychron Q1)',
+          targetPrice: 195,
+          currentSaved: 195,
+          category: 'Tech',
+          priority: 'low',
+          notes: 'Custom switches & keycaps upgrade',
+          link: 'https://keychron.com',
+          createdAt: new Date(now.getTime() - 86400000 * 20).toISOString(),
+          transactions: [
+            { id: 't6', amount: 100, type: 'deposit', note: 'Birthday gift money', date: new Date(now.getTime() - 86400000 * 18).toISOString() },
+            { id: 't7', amount: 95, type: 'deposit', note: 'Final deposit to reach goal!', date: new Date(now.getTime() - 86400000 * 2).toISOString() }
+          ]
+        }
+      ];
+      saveItems();
+      showToast('Loaded demo savings goals!');
+      switchTab('goals');
+    }
+
+    function clearAllData() {
+      if (confirm('Are you sure you want to clear all goals, settings, and transaction records? This will reset the app completely.')) {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(PROFILE_KEY);
+        items = [];
+        userProfile = {
+          name: '',
+          monthlyBudget: 250,
+          hourlyWage: 18,
+          currency: { symbol: '£', code: 'GBP' },
+          setupCompleted: false
+        };
+        updateProfileUI();
+        render();
+        showToast('App has been completely reset.');
+        launchSetupWizard();
+      }
+    }
+
+    function exportDataJSON() {
+      const exportPayload = {
+        app: 'CanYouAffordIt',
+        version: '2.0',
+        exportedAt: new Date().toISOString(),
+        profile: userProfile,
+        goals: items
+      };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportPayload, null, 2));
+      const downloadAnchor = document.createElement('a');
+      const dateStr = new Date().toISOString().split('T')[0];
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `canyouaffordit-backup-${dateStr}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Backup downloaded successfully!');
+    }
+
+    function importDataJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (Array.isArray(parsed)) {
+            items = parsed;
+            saveItems();
+            showToast(`Imported ${items.length} goals!`);
+          } else if (parsed.goals && Array.isArray(parsed.goals)) {
+            items = parsed.goals;
+            if (parsed.profile) {
+              userProfile = { ...userProfile, ...parsed.profile };
+              saveProfile();
+            }
+            saveItems();
+            showToast(`Imported backup with ${items.length} goals!`);
+          } else {
+            alert('Unrecognized JSON format. File must contain an array of goals.');
+          }
+        } catch (err) {
+          alert('Failed to parse JSON file: ' + err.message);
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    function launchSetupWizard() {
+      wizardCurrentStep = 1;
+      updateWizardStepUI();
+      const wName = document.getElementById('wizard-name');
+      if (wName) wName.value = userProfile.name || '';
+      const wCurr = document.getElementById('wizard-currency');
+      if (wCurr) wCurr.value = `${userProfile.currency.symbol}|${userProfile.currency.code}`;
+      const wBud = document.getElementById('wizard-budget');
+      if (wBud) wBud.value = userProfile.monthlyBudget || 250;
+      const wWage = document.getElementById('wizard-wage');
+      if (wWage) wWage.value = userProfile.hourlyWage || 18;
+
+      document.getElementById('setup-wizard-modal').classList.remove('hidden');
+    }
+
+    function closeSetupWizard(skip = false) {
+      document.getElementById('setup-wizard-modal').classList.add('hidden');
+      if (!userProfile.setupCompleted) {
+        userProfile.setupCompleted = true;
+        saveProfile();
+      }
+      if (!skip) {
+        triggerConfetti();
+        showToast('Setup complete! Welcome to Can You Afford It?');
+      }
+    }
+
+    function updateWizardStepUI() {
+      document.getElementById('setup-step-num').textContent = wizardCurrentStep;
+      const title = document.getElementById('setup-step-title');
+      const prevBtn = document.getElementById('wizard-prev-btn');
+      const nextBtn = document.getElementById('wizard-next-btn');
+
+      document.querySelectorAll('.setup-step').forEach(s => s.classList.add('hidden'));
+      const curr = document.getElementById(`setup-step-${wizardCurrentStep}`);
+      if (curr) curr.classList.remove('hidden');
+
+      if (wizardCurrentStep === 1) {
+        title.textContent = 'Welcome! Personalize Your Profile';
+        prevBtn.classList.add('hidden');
+        nextBtn.textContent = 'Continue';
+      } else if (wizardCurrentStep === 2) {
+        title.textContent = 'Savings Budget & Wage Rate';
+        prevBtn.classList.remove('hidden');
+        nextBtn.textContent = 'Continue';
+      } else if (wizardCurrentStep === 3) {
+        title.textContent = 'Set Your First Goal';
+        prevBtn.classList.remove('hidden');
+        nextBtn.textContent = 'Finish & Start Tracking';
+      }
+    }
+
+    function nextWizardStep() {
+      if (wizardCurrentStep === 1) {
+        const nameVal = document.getElementById('wizard-name').value.trim();
+        userProfile.name = nameVal || 'Saver';
+
+        const currParts = document.getElementById('wizard-currency').value.split('|');
+        userProfile.currency = { symbol: currParts[0], code: currParts[1] };
+        saveProfile();
+
+        wizardCurrentStep = 2;
+        updateWizardStepUI();
+      } else if (wizardCurrentStep === 2) {
+        const budgetVal = parseFloat(document.getElementById('wizard-budget').value);
+        if (!isNaN(budgetVal) && budgetVal >= 0) userProfile.monthlyBudget = budgetVal;
+
+        const wageVal = parseFloat(document.getElementById('wizard-wage').value);
+        if (!isNaN(wageVal) && wageVal >= 0) userProfile.hourlyWage = wageVal;
+
+        saveProfile();
+        wizardCurrentStep = 3;
+        updateWizardStepUI();
+      } else if (wizardCurrentStep === 3) {
+        const goalName = document.getElementById('wizard-goal-name').value.trim();
+        const goalTarget = parseFloat(document.getElementById('wizard-goal-target').value);
+
+        if (goalName && !isNaN(goalTarget) && goalTarget > 0) {
+          items.unshift({
+            id: 'goal-' + Date.now(),
+            name: goalName,
+            targetPrice: goalTarget,
+            currentSaved: 0,
+            category: 'Tech',
+            priority: 'high',
+            notes: 'Created during setup',
+            link: '',
+            createdAt: new Date().toISOString(),
+            transactions: []
+          });
+          saveItems();
+        }
+
+        userProfile.setupCompleted = true;
+        saveProfile();
+        closeSetupWizard(false);
+        render();
+      }
+    }
+
+    function prevWizardStep() {
+      if (wizardCurrentStep > 1) {
+        wizardCurrentStep--;
+        updateWizardStepUI();
+      }
+    }
+
+    function selectStarterTemplate(name, price, category) {
+      document.getElementById('wizard-goal-name').value = name;
+      document.getElementById('wizard-goal-target').value = price;
+    }
+
+    function saveUserSettings() {
+      const nameVal = document.getElementById('settings-user-name').value.trim();
+      userProfile.name = nameVal;
+
+      const currParts = document.getElementById('settings-currency-select').value.split('|');
+      userProfile.currency = { symbol: currParts[0], code: currParts[1] };
+
+      const budgetVal = parseFloat(document.getElementById('settings-monthly-budget').value);
+      if (!isNaN(budgetVal) && budgetVal >= 0) userProfile.monthlyBudget = budgetVal;
+
+      const wageVal = parseFloat(document.getElementById('settings-hourly-wage').value);
+      if (!isNaN(wageVal) && wageVal >= 0) userProfile.hourlyWage = wageVal;
+
+      saveProfile();
+      render();
+      showToast('Settings saved successfully!');
+    }
+
+    function populateAffordGoalSelect() {
+      const sel = document.getElementById('calc-goal-select');
+      sel.innerHTML = '<option value="">-- Or enter a custom item below --</option>' +
+        items.map(it => `<option value="${it.id}">${escapeHTML(it.name)} (${formatMoney(it.targetPrice)})</option>`).join('');
+    }
+
+    function handleCalcGoalSelect(id) {
+      if (!id) return;
+      const item = items.find(it => it.id === id);
+      if (item) {
+        document.getElementById('calc-item-name').value = item.name;
+        document.getElementById('calc-item-price').value = item.targetPrice;
+        runAffordabilityAnalysis();
+      }
+    }
+
+    function runAffordabilityAnalysis() {
+      const price = parseFloat(document.getElementById('calc-item-price').value);
+      const name = document.getElementById('calc-item-name').value.trim() || 'This item';
+
+      const badge = document.getElementById('calc-verdict-badge');
+      const banner = document.getElementById('calc-verdict-banner');
+      const title = document.getElementById('calc-verdict-title');
+      const desc = document.getElementById('calc-verdict-desc');
+      const metricHours = document.getElementById('calc-metric-hours');
+      const metricTime = document.getElementById('calc-metric-time');
+      const metricCooloff = document.getElementById('calc-metric-cooloff');
+      const impactText = document.getElementById('calc-impact-text');
+
+      if (isNaN(price) || price <= 0) {
+        badge.textContent = 'Enter a price';
+        badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700';
+        banner.className = 'p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5';
+        title.textContent = 'Enter an item price to see if you can afford it';
+        desc.textContent = "We'll cross-reference your total savings, monthly budget, and hourly wage.";
+        metricHours.textContent = '--';
+        metricTime.textContent = '--';
+        metricCooloff.textContent = 'Wait 48h';
+        impactText.textContent = 'Enter an amount to see how this purchase affects your total current savings.';
+        return;
+      }
+
+      let totalCurrentSaved = items.reduce((acc, it) => acc + (it.currentSaved || 0), 0);
+      let wage = userProfile.hourlyWage || 18;
+      let monthlyBudget = userProfile.monthlyBudget || 250;
+
+      let hoursNeeded = price / wage;
+      metricHours.textContent = `${hoursNeeded.toFixed(1)} hrs`;
+
+      let monthsNeeded = price / (monthlyBudget > 0 ? monthlyBudget : 1);
+      let weeksNeeded = monthsNeeded * 4.33;
+
+      if (weeksNeeded < 1) {
+        metricTime.textContent = `< 1 week`;
+      } else if (weeksNeeded < 8) {
+        metricTime.textContent = `${weeksNeeded.toFixed(1)} wks`;
+      } else {
+        metricTime.textContent = `${monthsNeeded.toFixed(1)} mos`;
+      }
+
+      if (price < 50) {
+        metricCooloff.textContent = '24 Hours';
+      } else if (price < 250) {
+        metricCooloff.textContent = '48 Hours';
+      } else if (price < 1000) {
+        metricCooloff.textContent = '7 Days';
+      } else {
+        metricCooloff.textContent = '30 Days';
+      }
+
+      if (totalCurrentSaved >= price) {
+        badge.textContent = '🟢 YES, AFFORDABLE';
+        badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300';
+        banner.className = 'p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-1.5';
+        title.textContent = `Yes, you can afford ${escapeHTML(name)}! 🎉`;
+        desc.textContent = `You have ${formatMoney(totalCurrentSaved)} in total savings. Buying this leaves you with ${formatMoney(totalCurrentSaved - price)}.`;
+        impactText.innerHTML = `<strong>Safe to purchase:</strong> This costs <strong>${hoursNeeded.toFixed(1)} hours of work</strong>. If you decide to proceed, remember to deduct the funds from your savings ledger!`;
+      } else if (totalCurrentSaved > 0 && (totalCurrentSaved / price) >= 0.7) {
+        let diff = price - totalCurrentSaved;
+        let diffWeeks = (diff / (monthlyBudget / 4.33)).toFixed(1);
+        badge.textContent = '🟡 ALMOST THERE';
+        badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300';
+        banner.className = 'p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-1.5';
+        title.textContent = `You're close! Only ${formatMoney(diff)} away.`;
+        desc.textContent = `At your monthly savings rate of ${formatMoney(monthlyBudget)}/mo, you can afford this in approx ${diffWeeks} weeks.`;
+        impactText.innerHTML = `<strong>Recommendation:</strong> Wait ${diffWeeks} weeks rather than dipping into emergency funds or debt. You've already saved ${((totalCurrentSaved / price) * 100).toFixed(0)}%!`;
+      } else {
+        let diff = price - totalCurrentSaved;
+        let futureDate = new Date(Date.now() + monthsNeeded * 30.5 * 86400000);
+        let dateStr = futureDate.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+        badge.textContent = '🔴 NOT YET';
+        badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-300';
+        banner.className = 'p-4 rounded-2xl bg-red-50 border border-red-200 space-y-1.5';
+        title.textContent = `Not yet — you need ${formatMoney(diff)} more.`;
+        desc.textContent = `At your current savings pace, you will comfortably afford this around ${dateStr}.`;
+        impactText.innerHTML = `<strong>Advice:</strong> Create a dedicated savings goal below and deposit small increments. At <strong>${formatMoney(monthlyBudget)}/month</strong>, you'll reach it guilt-free.`;
+      }
+    }
+
+    function addCalculatedItemToGoals() {
+      const price = parseFloat(document.getElementById('calc-item-price').value);
+      const name = document.getElementById('calc-item-name').value.trim();
+      if (!name || isNaN(price) || price <= 0) {
+        alert('Please enter a valid item name and price.');
+        return;
+      }
+      openCreateModal();
+      document.getElementById('item-modal-name').value = name;
+      document.getElementById('item-modal-target').value = price;
+    }
+
+    function renderAnalytics() {
+      let totalSaved = items.reduce((acc, it) => acc + (it.currentSaved || 0), 0);
+      let totalTarget = items.reduce((acc, it) => acc + (it.targetPrice || 0), 0);
+      let completedCount = items.filter(it => (it.currentSaved || 0) >= it.targetPrice).length;
+
+      document.getElementById('analytics-completed-val').textContent = `${completedCount} of ${items.length} Goals`;
+      const pct = items.length > 0 ? ((completedCount / items.length) * 100).toFixed(0) : 0;
+      document.getElementById('analytics-completed-subtitle').textContent = `${pct}% completion rate`;
+
+      let allTx = [];
+      items.forEach(it => {
+        if (it.transactions) {
+          it.transactions.forEach(t => allTx.push({ ...t, itemName: it.name, goalId: it.id }));
+        }
+      });
+
+      allTx.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+      let totalDeposited = allTx.filter(t => t.type !== 'withdrawal').reduce((a, b) => a + b.amount, 0);
+      let velocityWk = userProfile.monthlyBudget > 0 ? (userProfile.monthlyBudget / 4.33) : (totalDeposited / 4);
+      document.getElementById('analytics-velocity-val').textContent = `${formatMoney(velocityWk)} / wk`;
+
+      let remaining = Math.max(0, totalTarget - totalSaved);
+      if (remaining > 0 && userProfile.monthlyBudget > 0) {
+        let monthsLeft = remaining / userProfile.monthlyBudget;
+        let finish = new Date(Date.now() + monthsLeft * 30.5 * 86400000);
+        document.getElementById('analytics-finish-date').textContent = finish.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+      } else if (remaining === 0 && items.length > 0) {
+        document.getElementById('analytics-finish-date').textContent = 'All Funded! 🎉';
+      } else {
+        document.getElementById('analytics-finish-date').textContent = '--';
+      }
+
+      const catTotals = {};
+      CATEGORIES.forEach(c => catTotals[c.name] = 0);
+      items.forEach(it => {
+        const cat = it.category || 'Other';
+        catTotals[cat] = (catTotals[cat] || 0) + (it.currentSaved || 0);
+      });
+
+      const catBarsContainer = document.getElementById('analytics-category-bars');
+      catBarsContainer.innerHTML = CATEGORIES.map(cat => {
+        const amt = catTotals[cat.name] || 0;
+        const p = totalSaved > 0 ? ((amt / totalSaved) * 100).toFixed(0) : 0;
+        return `
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs font-semibold text-slate-700">
+              <span class="flex items-center gap-1.5">${cat.icon} ${cat.name}</span>
+              <span>${formatMoney(amt)} (${p}%)</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+              <div class="h-full bg-brand-500 rounded-full" style="width: ${p}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const ledgerContainer = document.getElementById('analytics-ledger-list');
+      document.getElementById('ledger-count').textContent = `${allTx.length} records`;
+
+      if (allTx.length === 0) {
+        ledgerContainer.innerHTML = '<div class="text-center py-6 text-xs text-slate-400">No deposits logged yet.</div>';
+        return;
+      }
+
+      ledgerContainer.innerHTML = allTx.slice(0, 30).map(tx => {
+        const isDep = tx.type !== 'withdrawal';
+        return `
+          <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center font-bold ${isDep ? 'bg-brand-100 text-brand-700' : 'bg-amber-100 text-amber-700'}">
+                ${isDep ? '+' : '-'}
+              </div>
+              <div>
+                <div class="font-bold text-slate-800">${escapeHTML(tx.itemName)}</div>
+                <div class="text-[10px] text-slate-400">${escapeHTML(tx.note || (isDep ? 'Deposit' : 'Withdrawal'))} • ${formatDate(tx.date)}</div>
+              </div>
+            </div>
+            <span class="font-bold text-sm ${isDep ? 'text-brand-600' : 'text-amber-600'}">
+              ${isDep ? '+' : '-'}${formatMoney(tx.amount)}
+            </span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function render() {
+      renderSummaryHeader();
+      renderFilterCounts();
+      renderGoalsList();
+    }
+
+    function renderSummaryHeader() {
+      let totalSaved = 0;
+      let totalTarget = 0;
+      let totalDeposits = 0;
+      let savedThisMonth = 0;
+
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+
+      items.forEach(item => {
+        const saved = Number(item.currentSaved) || 0;
+        const target = Number(item.targetPrice) || 0;
+        totalSaved += saved;
+        totalTarget += target;
+        if (item.transactions) {
+          totalDeposits += item.transactions.length;
+          item.transactions.forEach(t => {
+            const td = new Date(t.date || 0);
+            if (td.getMonth() === currentMonth && td.getFullYear() === currentYear && t.type !== 'withdrawal') {
+              savedThisMonth += Number(t.amount) || 0;
+            }
+          });
+        }
+      });
+
+      const totalRemaining = Math.max(0, totalTarget - totalSaved);
+      const overallPercent = totalTarget > 0 ? Math.min(100, (totalSaved / totalTarget) * 100) : 0;
+
+      document.getElementById('stat-total-saved').textContent = formatMoney(totalSaved);
+      document.getElementById('stat-saved-subtitle').textContent = `${totalDeposits} total deposits`;
+
+      document.getElementById('stat-total-target').textContent = formatMoney(totalTarget);
+      document.getElementById('stat-target-subtitle').textContent = `Across ${items.length} goal${items.length === 1 ? '' : 's'}`;
+
+      document.getElementById('stat-total-remaining').textContent = formatMoney(totalRemaining);
+      document.getElementById('stat-overall-percent').textContent = `${overallPercent.toFixed(1)}%`;
+
+      const bar = document.getElementById('master-progress-bar');
+      if (bar) bar.style.width = `${overallPercent}%`;
+
+      const bSaved = document.getElementById('banner-monthly-saved');
+      if (bSaved) bSaved.textContent = formatMoney(savedThisMonth);
+      const bTarget = document.getElementById('banner-monthly-target');
+      if (bTarget) bTarget.textContent = formatMoney(userProfile.monthlyBudget || 0);
+
+      const bMsg = document.getElementById('banner-pace-message');
+      if (bMsg) {
+        if (userProfile.monthlyBudget > 0) {
+          const pacePct = ((savedThisMonth / userProfile.monthlyBudget) * 100).toFixed(0);
+          bMsg.textContent = `${pacePct}% of your ${formatMoney(userProfile.monthlyBudget)} monthly savings goal logged this month.`;
+        } else {
+          bMsg.textContent = 'Set your monthly budget in Settings to track your monthly pace.';
+        }
+      }
+    }
+
+    function renderFilterCounts() {
+      const total = items.length;
+      const completed = items.filter(it => (it.currentSaved || 0) >= it.targetPrice).length;
+      const inProgress = total - completed;
+
+      document.getElementById('count-all').textContent = total;
+      document.getElementById('count-in-progress').textContent = inProgress;
+      document.getElementById('count-completed').textContent = completed;
+    }
+
+    function getFilteredAndSortedItems() {
+      let filtered = [...items];
+
+      if (currentFilter === 'in-progress') {
+        filtered = filtered.filter(it => (it.currentSaved || 0) < it.targetPrice);
+      } else if (currentFilter === 'completed') {
+        filtered = filtered.filter(it => (it.currentSaved || 0) >= it.targetPrice);
+      }
+
+      if (currentSearch) {
+        filtered = filtered.filter(it => {
+          const nameMatch = it.name.toLowerCase().includes(currentSearch);
+          const notesMatch = it.notes && it.notes.toLowerCase().includes(currentSearch);
+          const catMatch = it.category && it.category.toLowerCase().includes(currentSearch);
+          return nameMatch || notesMatch || catMatch;
+        });
+      }
+
+      filtered.sort((a, b) => {
+        const pctA = a.targetPrice > 0 ? (a.currentSaved / a.targetPrice) : 0;
+        const pctB = b.targetPrice > 0 ? (b.currentSaved / b.targetPrice) : 0;
+
+        switch (currentSort) {
+          case 'closest':
+            return pctB - pctA;
+          case 'furthest':
+            return pctA - pctB;
+          case 'newest':
+            return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+          case 'oldest':
+            return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+          case 'price-high':
+            return b.targetPrice - a.targetPrice;
+          case 'price-low':
+            return a.targetPrice - b.targetPrice;
+          case 'name':
+            return a.name.localeCompare(b.name);
+          default:
+            return 0;
+        }
+      });
+
+      return filtered;
+    }
+
+    function renderGoalsList() {
+      const container = document.getElementById('items-container');
+      const emptyState = document.getElementById('empty-state');
+      const filtered = getFilteredAndSortedItems();
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        container.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      container.classList.remove('hidden');
+
+      if (currentViewMode === 'grid') {
+        container.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5';
+        container.innerHTML = filtered.map(item => createGoalCardHTML(item)).join('');
+      } else {
+        container.className = 'flex flex-col space-y-3';
+        container.innerHTML = filtered.map(item => createGoalRowHTML(item)).join('');
+      }
+    }
+
+    function getCategoryInfo(catName) {
+      return CATEGORIES.find(c => c.name.toLowerCase() === (catName || '').toLowerCase()) || CATEGORIES[CATEGORIES.length - 1];
+    }
+
+    function createGoalCardHTML(item) {
+      const target = Number(item.targetPrice) || 0;
+      const saved = Number(item.currentSaved) || 0;
+      const percent = target > 0 ? Math.min(100, (saved / target) * 100) : 0;
+      const remaining = Math.max(0, target - saved);
+      const isCompleted = saved >= target;
+      const cat = getCategoryInfo(item.category);
+
+      let targetDateBadge = '';
+      if (item.targetDate) {
+        const d = new Date(item.targetDate);
+        targetDateBadge = `<span class="text-[10px] text-slate-400">Target: ${d.toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}</span>`;
+      }
+
+      return `
+        <div class="bg-white rounded-3xl p-5 border ${isCompleted ? 'border-brand-300 ring-2 ring-brand-400/20 celebrate-glow' : 'border-slate-200/90'} shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between group">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold ${cat.color} border">
+                <span>${cat.icon}</span>
+                <span>${item.category || 'Goal'}</span>
+              </span>
+
+              <div class="flex items-center gap-1">
+                ${isCompleted ? `
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-brand-100 text-brand-800 border border-brand-200">
+                    <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    Goal Reached!
+                  </span>
+                ` : `
+                  <span class="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
+                    ${percent.toFixed(0)}%
+                  </span>
+                `}
+                <button onclick="openDetailModal('${item.id}')" title="View Details & History" class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="cursor-pointer" onclick="openDetailModal('${item.id}')">
+              <h3 class="text-base font-bold text-slate-900 group-hover:text-brand-700 transition line-clamp-1">${escapeHTML(item.name)}</h3>
+              ${item.notes ? `<p class="text-xs text-slate-500 line-clamp-1 mt-0.5">${escapeHTML(item.notes)}</p>` : ''}
+            </div>
+
+            <div class="pt-1">
+              <div class="flex items-baseline justify-between mb-1">
+                <div>
+                  <span class="text-xs text-slate-400 font-medium">Saved</span>
+                  <div class="text-xl font-extrabold ${isCompleted ? 'text-brand-600' : 'text-slate-900'} tracking-tight">
+                    ${formatMoney(saved)}
+                    <span class="text-xs font-semibold text-slate-400">/ ${formatMoney(target)}</span>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-xs text-slate-400 font-medium">Remaining</span>
+                  <div class="text-xs font-bold ${isCompleted ? 'text-brand-600' : 'text-amber-600'}">
+                    ${isCompleted ? 'Fully Funded! 🎉' : `${formatMoney(remaining)} left`}
+                  </div>
+                </div>
+              </div>
+
+              <div class="w-full bg-slate-100 rounded-full h-3 p-0.5 overflow-hidden border border-slate-200/60">
+                <div class="h-full rounded-full transition-all duration-500 ease-out ${isCompleted ? 'bg-gradient-to-r from-brand-500 to-emerald-400' : 'bg-gradient-to-r from-brand-600 to-brand-500'}" style="width: ${percent}%"></div>
+              </div>
+              <div class="flex items-center justify-between mt-1">
+                ${targetDateBadge}
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+            ${item.link && isValidURL(item.link) ? `
+              <a href="${escapeHTML(item.link)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-brand-600 font-medium transition truncate max-w-[120px]">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                <span>Product</span>
+              </a>
+            ` : `
+              <span class="text-[11px] text-slate-400">${item.transactions ? item.transactions.length : 0} logs</span>
+            `}
+
+            <button onclick="openQuickAddModal('${item.id}')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold ${isCompleted ? 'bg-slate-100 text-slate-700 hover:bg-slate-200' : 'bg-brand-50 text-brand-700 hover:bg-brand-100'} border border-transparent hover:border-brand-200 transition active:scale-95">
+              <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+              <span>+ Add Savings</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function createGoalRowHTML(item) {
+      const target = Number(item.targetPrice) || 0;
+      const saved = Number(item.currentSaved) || 0;
+      const percent = target > 0 ? Math.min(100, (saved / target) * 100) : 0;
+      const remaining = Math.max(0, target - saved);
+      const isCompleted = saved >= target;
+      const cat = getCategoryInfo(item.category);
+
+      return `
+        <div class="bg-white rounded-2xl p-3.5 sm:p-4 border ${isCompleted ? 'border-brand-300 ring-1 ring-brand-400/20' : 'border-slate-200'} shadow-sm hover:shadow transition flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 group">
+          <div class="flex items-center space-x-3 cursor-pointer min-w-0 flex-1" onclick="openDetailModal('${item.id}')">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${cat.color} flex-shrink-0">
+              ${cat.icon}
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <h3 class="text-sm font-bold text-slate-900 group-hover:text-brand-700 transition truncate">${escapeHTML(item.name)}</h3>
+                ${isCompleted ? `
+                  <span class="inline-flex items-center px-2 py-0.2 rounded-full text-[10px] font-bold bg-brand-100 text-brand-800">
+                    Reached
+                  </span>
+                ` : ''}
+              </div>
+              <div class="text-xs text-slate-400 flex items-center gap-2">
+                <span>${formatMoney(saved)} / ${formatMoney(target)}</span>
+                <span>•</span>
+                <span class="${isCompleted ? 'text-brand-600 font-semibold' : 'text-slate-500'}">${percent.toFixed(0)}%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="w-full sm:w-48 space-y-1">
+            <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200">
+              <div class="h-full rounded-full transition-all duration-500 ${isCompleted ? 'bg-brand-500' : 'bg-brand-600'}" style="width: ${percent}%"></div>
+            </div>
+            <div class="flex justify-between text-[10px] text-slate-400">
+              <span>${isCompleted ? 'Fully Funded' : `${formatMoney(remaining)} left`}</span>
+              <span>${percent.toFixed(0)}%</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end gap-2 flex-shrink-0">
+            <button onclick="openQuickAddModal('${item.id}')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-brand-50 text-brand-700 hover:bg-brand-100 border border-brand-200/60 transition active:scale-95">
+              <svg class="w-3.5 h-3.5 fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+              <span>+ Add Savings</span>
+            </button>
+            <button onclick="openDetailModal('${item.id}')" class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition" title="View details">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCategorySelector() {
+      const container = document.getElementById('category-selector');
+      container.innerHTML = CATEGORIES.map((cat, idx) => `
+        <button type="button" onclick="selectCategory('${cat.name}')" data-cat="${cat.name}" class="category-btn flex flex-col items-center justify-center p-2 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50 transition text-xs ${idx === 0 ? 'bg-brand-50 border-brand-500 ring-2 ring-brand-500/20' : 'bg-slate-50'}">
+          <span class="text-lg">${cat.icon}</span>
+          <span class="text-[10px] font-semibold mt-1 text-slate-700 truncate">${cat.name}</span>
+        </button>
+      `).join('');
+    }
+
+    function selectCategory(catName) {
+      document.getElementById('item-modal-category').value = catName;
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        if (btn.getAttribute('data-cat') === catName) {
+          btn.classList.add('bg-brand-50', 'border-brand-500', 'ring-2', 'ring-brand-500/20');
+          btn.classList.remove('bg-slate-50', 'border-slate-200');
+        } else {
+          btn.classList.remove('bg-brand-50', 'border-brand-500', 'ring-2', 'ring-brand-500/20');
+          btn.classList.add('bg-slate-50', 'border-slate-200');
+        }
+      });
+    }
+
+    function openCreateModal() {
+      document.getElementById('item-modal-title').textContent = 'Add New Goal';
+      document.getElementById('item-modal-id').value = '';
+      document.getElementById('item-modal-name').value = '';
+      document.getElementById('item-modal-target').value = '';
+      document.getElementById('item-modal-starting').value = '';
+      document.getElementById('item-modal-link').value = '';
+      document.getElementById('item-modal-date').value = '';
+      document.getElementById('item-modal-priority').value = 'medium';
+      document.getElementById('starting-amount-group').classList.remove('hidden');
+      selectCategory('Tech');
+      document.getElementById('item-modal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('item-modal-name').focus(), 50);
+    }
+
+    function openEditModal(id) {
+      const item = items.find(it => it.id === id);
+      if (!item) return;
+
+      document.getElementById('item-modal-title').textContent = 'Edit Goal';
+      document.getElementById('item-modal-id').value = item.id;
+      document.getElementById('item-modal-name').value = item.name;
+      document.getElementById('item-modal-target').value = item.targetPrice;
+      document.getElementById('item-modal-link').value = item.notes || item.link || '';
+      document.getElementById('item-modal-date').value = item.targetDate || '';
+      document.getElementById('item-modal-priority').value = item.priority || 'medium';
+      document.getElementById('starting-amount-group').classList.add('hidden');
+      selectCategory(item.category || 'Tech');
+      document.getElementById('item-modal').classList.remove('hidden');
+    }
+
+    function closeItemModal() {
+      document.getElementById('item-modal').classList.add('hidden');
+    }
+
+    function handleItemFormSubmit(event) {
+      event.preventDefault();
+      const id = document.getElementById('item-modal-id').value;
+      const name = document.getElementById('item-modal-name').value.trim();
+      const targetPrice = parseFloat(document.getElementById('item-modal-target').value);
+      const startingAmount = parseFloat(document.getElementById('item-modal-starting').value) || 0;
+      const category = document.getElementById('item-modal-category').value;
+      const linkOrNotes = document.getElementById('item-modal-link').value.trim();
+      const targetDate = document.getElementById('item-modal-date').value;
+      const priority = document.getElementById('item-modal-priority').value;
+
+      if (!name || isNaN(targetPrice) || targetPrice <= 0) {
+        alert('Please provide a valid item name and target price.');
+        return;
+      }
+
+      if (id) {
+        const item = items.find(it => it.id === id);
+        if (item) {
+          item.name = name;
+          item.targetPrice = targetPrice;
+          item.category = category;
+          item.targetDate = targetDate;
+          item.priority = priority;
+          if (isValidURL(linkOrNotes)) {
+            item.link = linkOrNotes;
+          } else {
+            item.notes = linkOrNotes;
+          }
+          saveItems();
+          showToast(`Updated "${name}"!`);
+        }
+      } else {
+        const newItem = {
+          id: 'goal-' + Date.now(),
+          name,
+          targetPrice,
+          currentSaved: Math.min(startingAmount, targetPrice * 10),
+          category,
+          priority: priority || 'medium',
+          targetDate: targetDate || '',
+          notes: isValidURL(linkOrNotes) ? '' : linkOrNotes,
+          link: isValidURL(linkOrNotes) ? linkOrNotes : '',
+          createdAt: new Date().toISOString(),
+          transactions: []
+        };
+
+        if (startingAmount > 0) {
+          newItem.transactions.push({
+            id: 't-' + Date.now(),
+            amount: startingAmount,
+            type: 'deposit',
+            note: 'Starting balance',
+            date: new Date().toISOString()
+          });
+        }
+
+        items.unshift(newItem);
+        saveItems();
+        showToast(`Created new goal for "${name}"!`);
+
+        if (newItem.currentSaved >= newItem.targetPrice) {
+          setTimeout(triggerConfetti, 300);
+        }
+      }
+
+      closeItemModal();
+      if (activeDetailId === id) {
+        openDetailModal(id);
+      }
+    }
+
+    function openQuickAddModal(itemId) {
+      const item = items.find(it => it.id === itemId);
+      if (!item) return;
+
+      activeQuickAddId = itemId;
+      quickAddType = 'deposit';
+      setQuickAddType('deposit');
+
+      document.getElementById('quick-add-item-name').textContent = item.name;
+      const target = item.targetPrice;
+      const saved = item.currentSaved || 0;
+      const percent = target > 0 ? Math.min(100, (saved / target) * 100) : 0;
+      const remaining = Math.max(0, target - saved);
+
+      document.getElementById('quick-add-status-text').textContent = `${formatMoney(saved)} / ${formatMoney(target)}`;
+      document.getElementById('quick-add-progress-bar').style.width = `${percent}%`;
+      document.getElementById('quick-add-percent-text').textContent = `${percent.toFixed(1)}% reached`;
+      document.getElementById('quick-add-remaining-text').textContent = `${formatMoney(remaining)} remaining`;
+
+      const fillChip = document.getElementById('fill-remaining-chip');
+      if (remaining > 0) {
+        fillChip.textContent = `Fill Remaining (${formatMoney(remaining)})`;
+        fillChip.classList.remove('hidden');
+      } else {
+        fillChip.classList.add('hidden');
+      }
+
+      const amtInput = document.getElementById('quick-add-amount');
+      amtInput.value = '';
+      document.getElementById('quick-add-note').value = '';
+      updateQuickAddProjection();
+
+      document.getElementById('quick-add-modal').classList.remove('hidden');
+      setTimeout(() => amtInput.focus(), 50);
+    }
+
+    function closeQuickAddModal() {
+      document.getElementById('quick-add-modal').classList.add('hidden');
+      activeQuickAddId = null;
+    }
+
+    function setQuickAddType(type) {
+      quickAddType = type;
+      const depBtn = document.getElementById('type-btn-deposit');
+      const wdrBtn = document.getElementById('type-btn-withdraw');
+      const lbl = document.getElementById('quick-add-type-label');
+      const chips = document.getElementById('quick-add-chips');
+
+      if (type === 'deposit') {
+        depBtn.className = 'flex-1 py-1.5 rounded-lg bg-white text-brand-700 shadow-sm transition flex items-center justify-center gap-1.5 font-bold';
+        wdrBtn.className = 'flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition flex items-center justify-center gap-1.5';
+        lbl.textContent = 'Add';
+        chips.classList.remove('hidden');
+      } else {
+        wdrBtn.className = 'flex-1 py-1.5 rounded-lg bg-white text-amber-700 shadow-sm transition flex items-center justify-center gap-1.5 font-bold';
+        depBtn.className = 'flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition flex items-center justify-center gap-1.5';
+        lbl.textContent = 'Subtract';
+        chips.classList.add('hidden');
+      }
+      updateQuickAddProjection();
+    }
+
+    function presetAmount(amt) {
+      document.getElementById('quick-add-amount').value = amt;
+      updateQuickAddProjection();
+    }
+
+    function presetFillRemaining() {
+      const item = items.find(it => it.id === activeQuickAddId);
+      if (!item) return;
+      const remaining = Math.max(0, item.targetPrice - (item.currentSaved || 0));
+      document.getElementById('quick-add-amount').value = remaining.toFixed(2);
+      updateQuickAddProjection();
+    }
+
+    function updateQuickAddProjection() {
+      const item = items.find(it => it.id === activeQuickAddId);
+      if (!item) return;
+
+      const amt = parseFloat(document.getElementById('quick-add-amount').value) || 0;
+      const current = item.currentSaved || 0;
+      let newTotal = quickAddType === 'deposit' ? current + amt : Math.max(0, current - amt);
+
+      const percent = item.targetPrice > 0 ? (newTotal / item.targetPrice) * 100 : 0;
+      document.getElementById('quick-add-projected-val').textContent = `${formatMoney(newTotal)} (${percent.toFixed(1)}%)`;
+    }
+
+    function submitQuickAdd() {
+      const item = items.find(it => it.id === activeQuickAddId);
+      if (!item) return;
+
+      const amt = parseFloat(document.getElementById('quick-add-amount').value);
+      if (isNaN(amt) || amt <= 0) {
+        alert('Please enter a valid amount greater than 0.');
+        return;
+      }
+
+      const note = document.getElementById('quick-add-note').value.trim();
+      const current = item.currentSaved || 0;
+      const wasCompleted = current >= item.targetPrice;
+
+      if (!item.transactions) item.transactions = [];
+
+      let newSaved = current;
+      if (quickAddType === 'deposit') {
+        newSaved = current + amt;
+        item.transactions.unshift({
+          id: 't-' + Date.now(),
+          amount: amt,
+          type: 'deposit',
+          note: note || 'Deposit',
+          date: new Date().toISOString()
+        });
+      } else {
+        newSaved = Math.max(0, current - amt);
+        item.transactions.unshift({
+          id: 't-' + Date.now(),
+          amount: amt,
+          type: 'withdrawal',
+          note: note || 'Correction / Withdrawal',
+          date: new Date().toISOString()
+        });
+      }
+
+      item.currentSaved = newSaved;
+      saveItems();
+      closeQuickAddModal();
+
+      const isNowCompleted = newSaved >= item.targetPrice;
+      if (!wasCompleted && isNowCompleted) {
+        triggerConfetti();
+        showToast(`🎉 Goal Reached for "${item.name}"!`);
+      } else {
+        showToast(`Logged ${quickAddType === 'deposit' ? '+' : '-'}${formatMoney(amt)} for "${item.name}"`);
+      }
+
+      if (activeDetailId === item.id) {
+        openDetailModal(item.id);
+      }
+    }
+
+    function openDetailModal(itemId) {
+      const item = items.find(it => it.id === itemId);
+      if (!item) return;
+
+      activeDetailId = itemId;
+      const target = item.targetPrice;
+      const saved = item.currentSaved || 0;
+      const percent = target > 0 ? Math.min(100, (saved / target) * 100) : 0;
+      const remaining = Math.max(0, target - saved);
+      const isCompleted = saved >= target;
+      const cat = getCategoryInfo(item.category);
+
+      document.getElementById('detail-name').textContent = item.name;
+      document.getElementById('detail-category-badge').textContent = `${cat.icon} ${item.category || 'Goal'}`;
+      document.getElementById('detail-category-badge').className = `px-2 py-0.5 rounded-full text-xs font-semibold ${cat.color} border`;
+
+      const priorityBadge = document.getElementById('detail-priority-badge');
+      if (item.priority === 'high') {
+        priorityBadge.textContent = 'High Priority';
+        priorityBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200';
+      } else if (item.priority === 'low') {
+        priorityBadge.textContent = 'Low Priority';
+        priorityBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600';
+      } else {
+        priorityBadge.textContent = 'Medium Priority';
+        priorityBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200';
+      }
+
+      const statusBadge = document.getElementById('detail-status-badge');
+      if (isCompleted) {
+        statusBadge.textContent = 'Goal Reached! 🎉';
+        statusBadge.className = 'px-2 py-0.5 rounded-full text-xs font-bold bg-brand-100 text-brand-800 border border-brand-200';
+      } else {
+        statusBadge.textContent = 'In Progress';
+        statusBadge.className = 'px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700';
+      }
+
+      const linkContainer = document.getElementById('detail-link-container');
+      if (item.link && isValidURL(item.link)) {
+        linkContainer.innerHTML = `
+          <a href="${escapeHTML(item.link)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-xs text-brand-600 hover:text-brand-700 font-semibold underline mt-1">
+            <span>View external product page</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          </a>
+        `;
+      } else if (item.notes) {
+        linkContainer.innerHTML = `<p class="text-xs text-slate-500 mt-1">${escapeHTML(item.notes)}</p>`;
+      } else {
+        linkContainer.innerHTML = '';
+      }
+
+      document.getElementById('detail-saved-val').textContent = formatMoney(saved);
+      document.getElementById('detail-target-val').textContent = formatMoney(target);
+      document.getElementById('detail-progress-bar').style.width = `${percent}%`;
+      document.getElementById('detail-percent-val').textContent = `${percent.toFixed(1)}% reached`;
+      document.getElementById('detail-remaining-val').textContent = isCompleted ? 'Fully Funded!' : `${formatMoney(remaining)} remaining`;
+
+      const dateBox = document.getElementById('detail-target-date-box');
+      if (item.targetDate) {
+        dateBox.classList.remove('hidden');
+        document.getElementById('detail-target-date-val').textContent = new Date(item.targetDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+      } else {
+        dateBox.classList.add('hidden');
+      }
+
+      document.getElementById('detail-quick-add-btn').onclick = () => {
+        closeDetailModal();
+        openQuickAddModal(item.id);
+      };
+      document.getElementById('detail-edit-btn').onclick = () => {
+        closeDetailModal();
+        openEditModal(item.id);
+      };
+      document.getElementById('detail-delete-btn').onclick = () => {
+        deleteItem(item.id);
+      };
+
+      renderDetailTransactions(item);
+      document.getElementById('detail-modal').classList.remove('hidden');
+    }
+
+    function renderDetailTransactions(item) {
+      const list = document.getElementById('detail-transactions-list');
+      if (!item.transactions || item.transactions.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-8 text-xs text-slate-400 bg-slate-50 rounded-2xl border border-slate-200">
+            No deposits logged yet. Click "+ Add Savings" to start tracking!
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = item.transactions.map((tx) => {
+        const isDep = tx.type !== 'withdrawal';
+        const dateStr = formatDate(tx.date);
+        return `
+          <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/80 hover:bg-slate-100/70 transition text-xs">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center font-bold ${isDep ? 'bg-brand-100 text-brand-700' : 'bg-amber-100 text-amber-700'}">
+                ${isDep ? '+' : '-'}
+              </div>
+              <div>
+                <div class="font-bold text-slate-800">${escapeHTML(tx.note || (isDep ? 'Deposit' : 'Withdrawal'))}</div>
+                <div class="text-[10px] text-slate-400">${dateStr}</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="font-bold text-sm ${isDep ? 'text-brand-600' : 'text-amber-600'}">
+                ${isDep ? '+' : '-'}${formatMoney(tx.amount)}
+              </span>
+              <button onclick="deleteTransaction('${item.id}', '${tx.id}')" title="Delete record" class="text-slate-300 hover:text-red-500 p-1 rounded transition">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function deleteTransaction(itemId, txId) {
+      const item = items.find(it => it.id === itemId);
+      if (!item || !item.transactions) return;
+
+      if (!confirm('Are you sure you want to remove this transaction record?')) return;
+
+      const tx = item.transactions.find(t => t.id === txId);
+      if (!tx) return;
+
+      if (tx.type !== 'withdrawal') {
+        item.currentSaved = Math.max(0, (item.currentSaved || 0) - tx.amount);
+      } else {
+        item.currentSaved = (item.currentSaved || 0) + tx.amount;
+      }
+
+      item.transactions = item.transactions.filter(t => t.id !== txId);
+      saveItems();
+      openDetailModal(itemId);
+      showToast('Transaction removed.');
+    }
+
+    function deleteItem(itemId) {
+      const item = items.find(it => it.id === itemId);
+      if (!item) return;
+
+      if (confirm(`Are you sure you want to delete "${item.name}"? This cannot be undone.`)) {
+        items = items.filter(it => it.id !== itemId);
+        saveItems();
+        closeDetailModal();
+        showToast(`Deleted "${item.name}".`);
+      }
+    }
+
+    function closeDetailModal() {
+      document.getElementById('detail-modal').classList.add('hidden');
+      activeDetailId = null;
+    }
+
+    function setFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
+        tab.classList.add('text-slate-600');
+      });
+      const activeTabEl = document.getElementById(`filter-tab-${filter}`);
+      if (activeTabEl) {
+        activeTabEl.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
+        activeTabEl.classList.remove('text-slate-600');
+      }
+      render();
+    }
+
+    function handleSortChange(sortVal) {
+      currentSort = sortVal;
+      render();
+    }
+
+    function handleSearch(val) {
+      currentSearch = (val || '').trim().toLowerCase();
+      render();
+    }
+
+    function setViewMode(mode) {
+      currentViewMode = mode;
+      localStorage.setItem(VIEW_KEY, mode);
+      updateViewToggleUI();
+      render();
+    }
+
+    function updateViewToggleUI() {
+      const gridBtn = document.getElementById('view-grid-btn');
+      const listBtn = document.getElementById('view-list-btn');
+      if (currentViewMode === 'grid') {
+        gridBtn.className = 'p-1.5 rounded-lg bg-white text-brand-600 shadow-sm transition';
+        listBtn.className = 'p-1.5 rounded-lg text-slate-500 hover:text-slate-800 transition';
+      } else {
+        gridBtn.className = 'p-1.5 rounded-lg text-slate-500 hover:text-slate-800 transition';
+        listBtn.className = 'p-1.5 rounded-lg bg-white text-brand-600 shadow-sm transition';
+      }
+    }
+
+    function playCelebrationChime() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(523.25, now);
+        osc1.frequency.exponentialRampToValueAtTime(659.25, now + 0.12);
+        osc1.frequency.exponentialRampToValueAtTime(783.99, now + 0.25);
+        osc1.frequency.exponentialRampToValueAtTime(1046.50, now + 0.4);
+
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(261.63, now);
+        osc2.frequency.exponentialRampToValueAtTime(523.25, now + 0.4);
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + 0.8);
+        osc2.stop(now + 0.8);
+      } catch (e) {}
+    }
+
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+        setTimeout(() => {
+          confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0 } });
+          confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 } });
+        }, 200);
+      }
+      playCelebrationChime();
+    }
+
+    function showToast(msg) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'px-4 py-2.5 bg-slate-900 text-white text-xs sm:text-sm font-semibold rounded-2xl shadow-xl flex items-center gap-2 transform translate-y-4 opacity-0 transition-all duration-300 pointer-events-auto border border-slate-700';
+      toast.innerHTML = `
+        <svg class="w-4 h-4 text-brand-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        <span>${escapeHTML(msg)}</span>
+      `;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-4', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function isValidURL(string) {
+      try {
+        new URL(string);
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function formatDate(isoStr) {
+      if (!isoStr) return '';
+      try {
+        const d = new Date(isoStr);
+        return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+      } catch (e) {
+        return isoStr;
+      }
+    }
+  </script>
+</body>
+</html>

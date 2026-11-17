@@ -1,0 +1,16 @@
+{
+  "name": "Can You Afford It?",
+  "short_name": "CanYouAffordIt",
+  "description": "Personal Savings Tracker & Purchase Decision Engine",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "app/src/main/res/mipmap-xxhdpi/ic_launcher.webp",
+      "sizes": "192x192",
+      "type": "image/webp"
+    }
+  ]
+}

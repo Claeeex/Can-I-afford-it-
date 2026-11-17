@@ -1,0 +1,9 @@
+{
+  "name": "Can You Afford It?",
+  "short_name": "CanYouAffordIt",
+  "description": "Personal Savings Tracker & Purchase Decision Engine",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10b981"
+}
